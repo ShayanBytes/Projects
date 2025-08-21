@@ -61,7 +61,7 @@ const HomePage = () => {
             {/* Creator 2 */}
             <div className="text-center">
               <img
-                src="https://via.placeholder.com/120x120/333333/FFFFFF?text=Creator+2"
+                src="Kaushik.jpeg"
                 alt="Kaushik Das"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-md mx-auto mb-3"
               />
@@ -71,7 +71,7 @@ const HomePage = () => {
             {/* Creator 3 */}
             <div className="text-center">
               <img
-                src="https://via.placeholder.com/120x120/666666/FFFFFF?text=Creator+3"
+                src=""
                 alt="Suranjana Giri"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-md mx-auto mb-3"
               />
@@ -83,7 +83,7 @@ const HomePage = () => {
             {/* Creator 4 */}
             <div className="text-center">
               <img
-                src="https://via.placeholder.com/120x120/999999/FFFFFF?text=Creator+4"
+                src="Sahin.jpeg"
                 alt="Sahin Saharear"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-md mx-auto mb-3"
               />
@@ -95,7 +95,7 @@ const HomePage = () => {
             {/* Creator 5 */}
             <div className="text-center">
               <img
-                src="https://via.placeholder.com/120x120/CCCCCC/000000?text=Creator+5"
+                src="Sreejani.jpeg"
                 alt="Sreejani Biswas"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-md mx-auto mb-3"
               />
