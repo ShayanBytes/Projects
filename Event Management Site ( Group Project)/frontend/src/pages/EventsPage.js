@@ -5,7 +5,7 @@ import EventCard from "../components/EventCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const EventsPage = () => {
-  const { isAttendee } = useAuth();
+  const { user } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -110,7 +110,7 @@ const EventsPage = () => {
                 <EventCard
                   key={event._id}
                   event={event}
-                  showRegistrationButton={isAttendee}
+                  showRegistrationButton={true}
                   onRegister={handleRegister}
                   onUnregister={handleUnregister}
                 />

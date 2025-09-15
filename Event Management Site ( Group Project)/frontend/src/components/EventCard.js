@@ -8,7 +8,7 @@ const EventCard = ({
   onRegister,
   onUnregister,
 }) => {
-  const { isAttendee, user } = useAuth();
+  const { user } = useAuth();
 
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -23,18 +23,19 @@ const EventCard = ({
   );
 
   const isFull = event.currentAttendees >= event.maxAttendees;
+  const isOwner = event.organizer?._id === user?.id;
 
   return (
-    <div className="card">
+    <div className="card flex flex-col h-full">
       <div className="flex justify-between items-start mb-4">
-        <div>
+        <div className="flex-1">
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
             {event.title}
           </h3>
           <p className="text-gray-600 mb-2">{event.description}</p>
         </div>
         <span
-          className={`px-2 py-1 text-xs rounded-full ${
+          className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ml-2 ${
             event.status === "upcoming"
               ? "bg-green-100 text-green-800"
               : event.status === "ongoing"
@@ -48,7 +49,7 @@ const EventCard = ({
         </span>
       </div>
 
-      <div className="space-y-2 mb-4">
+      <div className="space-y-2 mb-4 flex-1">
         <div className="flex items-center text-sm text-gray-600">
           <span className="font-medium">Date:</span>
           <span className="ml-2">
@@ -78,24 +79,18 @@ const EventCard = ({
         </div>
       </div>
 
-      <div className="flex justify-between items-center">
-        <Link
-          to={`/events/${event._id}`}
-          className="text-primary-600 hover:text-primary-700 font-medium"
-        >
-          View Details
-        </Link>
+      {/* Bottom section - always at the bottom */}
+      <div className="mt-auto pt-4 border-t border-gray-100">
+        <div className="flex justify-between items-center">
+          <Link
+            to={`/events/${event._id}`}
+            className="text-primary-600 hover:text-primary-700 font-medium"
+          >
+            View Details
+          </Link>
 
-        {isAttendee && showRegistrationButton && (
-          <div>
-            {isRegistered ? (
-              <button
-                onClick={() => onUnregister && onUnregister(event._id)}
-                className="btn bg-red-600 text-white hover:bg-red-700"
-              >
-                Unregister
-              </button>
-            ) : (
+          {!isOwner && !isRegistered && showRegistrationButton && user && (
+            <div>
               <button
                 onClick={() => onRegister && onRegister(event._id)}
                 disabled={isFull}
@@ -107,9 +102,12 @@ const EventCard = ({
               >
                 {isFull ? "Full" : "Register"}
               </button>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+          {isOwner && (
+            <div className="text-sm text-gray-600 font-medium">Your Event</div>
+          )}
+        </div>
       </div>
     </div>
   );

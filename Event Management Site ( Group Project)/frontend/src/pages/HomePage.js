@@ -4,6 +4,12 @@ import { useAuth } from "../context/AuthContext";
 const HomePage = () => {
   const { user, isOrganizer } = useAuth();
 
+  console.log("HomePage Debug:", {
+    user,
+    isOrganizer,
+    userRole: user?.role,
+  });
+
   return (
     <div className="min-h-screen bg-white">
       {/* Image Banner Section */}
@@ -71,7 +77,7 @@ const HomePage = () => {
             {/* Creator 3 */}
             <div className="text-center">
               <img
-                src=""
+                src="Sreejani.jpeg"
                 alt="Suranjana Giri"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-md mx-auto mb-3"
               />

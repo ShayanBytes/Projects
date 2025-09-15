@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { eventService } from "../../services/apiService";
+import { eventService, userService } from "../../services/apiService";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 const OrganizerEventsPage = () => {
   const [events, setEvents] = useState([]);
+  const [registeredEvents, setRegisteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("created");
 
   useEffect(() => {
-    fetchEvents();
+    fetchAllEvents();
   }, []);
 
-  const fetchEvents = async () => {
+  const fetchAllEvents = async () => {
     try {
-      const response = await eventService.getOrganizerEvents();
-      setEvents(response);
+      const [createdEventsResponse, registeredEventsResponse] =
+        await Promise.all([
+          eventService.getOrganizerEvents(),
+          userService.getRegisteredEvents(),
+        ]);
+      setEvents(createdEventsResponse);
+      setRegisteredEvents(registeredEventsResponse.registeredEvents || []);
     } catch (err) {
       setError("Failed to load your events");
       console.error("Error fetching organizer events:", err);
@@ -38,6 +45,17 @@ const OrganizerEventsPage = () => {
       setEvents((prev) => prev.filter((event) => event._id !== eventId));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to delete event");
+    }
+  };
+
+  const handleUnregister = async (eventId) => {
+    try {
+      await eventService.unregisterFromEvent(eventId);
+      setRegisteredEvents((prev) =>
+        prev.filter((event) => event._id !== eventId)
+      );
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to unregister from event");
     }
   };
 
@@ -65,10 +83,36 @@ const OrganizerEventsPage = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">My Events</h1>
+          <h1 className="text-3xl font-bold text-gray-800">
+            My Events Dashboard
+          </h1>
           <Link to="/organizer/create-event" className="btn btn-primary">
             Create New Event
           </Link>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex space-x-1 mb-8 bg-gray-200 p-1 rounded-lg w-fit">
+          <button
+            onClick={() => setActiveTab("created")}
+            className={`px-4 py-2 rounded-md transition-colors ${
+              activeTab === "created"
+                ? "bg-white text-gray-800 shadow-sm"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            Created Events
+          </button>
+          <button
+            onClick={() => setActiveTab("registered")}
+            className={`px-4 py-2 rounded-md transition-colors ${
+              activeTab === "registered"
+                ? "bg-white text-gray-800 shadow-sm"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            Registered Events
+          </button>
         </div>
 
         {error && (
@@ -77,107 +121,202 @@ const OrganizerEventsPage = () => {
           </div>
         )}
 
-        {events.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">📅</div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
-              No events created yet
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Start by creating your first event!
-            </p>
-            <Link to="/organizer/create-event" className="btn btn-primary">
-              Create Event
-            </Link>
-          </div>
-        ) : (
-          <div className="grid lg:grid-cols-2 gap-6">
-            {events.map((event) => (
-              <div key={event._id} className="card">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                      {event.title}
-                    </h3>
-                    <p className="text-gray-600 mb-2 line-clamp-2">
-                      {event.description}
-                    </p>
-                  </div>
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      event.status === "upcoming"
-                        ? "bg-green-100 text-green-800"
-                        : event.status === "ongoing"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : event.status === "completed"
-                        ? "bg-gray-100 text-gray-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {event.status}
-                  </span>
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="font-medium">Date:</span>
-                    <span className="ml-2">
-                      {formatDate(event.date)} at {event.time}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="font-medium">Location:</span>
-                    <span className="ml-2">{event.location}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="font-medium">Type:</span>
-                    <span className="ml-2">{event.eventType}</span>
-                  </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <span className="font-medium">Registrations:</span>
-                    <span className="ml-2">
-                      {event.currentAttendees} / {event.maxAttendees}
-                      {event.currentAttendees >= event.maxAttendees && (
-                        <span className="text-red-600 ml-1">(Full)</span>
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                  <div className="flex space-x-2">
-                    <Link
-                      to={`/events/${event._id}`}
-                      className="text-primary-600 hover:text-primary-700 font-medium text-sm"
-                    >
-                      View Details
-                    </Link>
-                    <Link
-                      to={`/organizer/events/${event._id}/registrations`}
-                      className="text-primary-600 hover:text-primary-700 font-medium text-sm"
-                    >
-                      Registrations
-                    </Link>
-                  </div>
-
-                  <div className="flex space-x-2">
-                    <Link
-                      to={`/organizer/events/${event._id}/edit`}
-                      className="btn btn-secondary text-sm"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDeleteEvent(event._id)}
-                      className="btn btn-danger text-sm"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
+        {}
+        {activeTab === "created" && (
+          <>
+            {events.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">📅</div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                  No events created yet
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Start by creating your first event!
+                </p>
+                <Link to="/organizer/create-event" className="btn btn-primary">
+                  Create Event
+                </Link>
               </div>
-            ))}
-          </div>
+            ) : (
+              <div className="grid lg:grid-cols-2 gap-6">
+                {events.map((event) => (
+                  <div key={event._id} className="card">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                          {event.title}
+                        </h3>
+                        <p className="text-gray-600 mb-2 line-clamp-2">
+                          {event.description}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          event.status === "upcoming"
+                            ? "bg-green-100 text-green-800"
+                            : event.status === "ongoing"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : event.status === "completed"
+                            ? "bg-gray-100 text-gray-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {event.status}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Date:</span>
+                        <span className="ml-2">
+                          {formatDate(event.date)} at {event.time}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Location:</span>
+                        <span className="ml-2">{event.location}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Type:</span>
+                        <span className="ml-2">{event.eventType}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Registrations:</span>
+                        <span className="ml-2">
+                          {event.currentAttendees} / {event.maxAttendees}
+                          {event.currentAttendees >= event.maxAttendees && (
+                            <span className="text-red-600 ml-1">(Full)</span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                      <div className="flex space-x-2">
+                        <Link
+                          to={`/events/${event._id}`}
+                          className="text-primary-600 hover:text-primary-700 font-medium text-sm"
+                        >
+                          View Details
+                        </Link>
+                        <Link
+                          to={`/organizer/events/${event._id}/registrations`}
+                          className="text-primary-600 hover:text-primary-700 font-medium text-sm"
+                        >
+                          Registrations
+                        </Link>
+                      </div>
+
+                      <div className="flex space-x-2">
+                        <Link
+                          to={`/organizer/events/${event._id}/edit`}
+                          className="btn btn-secondary text-sm"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteEvent(event._id)}
+                          className="btn btn-danger text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Registered Events Tab */}
+        {activeTab === "registered" && (
+          <>
+            {registeredEvents.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">🎟️</div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                  No registered events yet
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Browse events and register for ones that interest you!
+                </p>
+                <Link to="/events" className="btn btn-primary">
+                  Browse Events
+                </Link>
+              </div>
+            ) : (
+              <div className="grid lg:grid-cols-2 gap-6">
+                {registeredEvents.map((event) => (
+                  <div key={event._id} className="card">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                          {event.title}
+                        </h3>
+                        <p className="text-gray-600 text-sm mb-2">
+                          {event.description}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          event.status === "upcoming"
+                            ? "bg-green-100 text-green-800"
+                            : event.status === "ongoing"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : event.status === "completed"
+                            ? "bg-gray-100 text-gray-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {event.status}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Date:</span>
+                        <span className="ml-2">
+                          {formatDate(event.date)} at {event.time}
+                        </span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Location:</span>
+                        <span className="ml-2">{event.location}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Type:</span>
+                        <span className="ml-2">{event.eventType}</span>
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="font-medium">Organizer:</span>
+                        <span className="ml-2">
+                          {event.organizer?.organizationName ||
+                            event.organizer?.name}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                      <Link
+                        to={`/events/${event._id}`}
+                        className="text-primary-600 hover:text-primary-700 font-medium text-sm"
+                      >
+                        View Details
+                      </Link>
+
+                      <button
+                        onClick={() => handleUnregister(event._id)}
+                        className="btn bg-red-600 text-white hover:bg-red-700 text-sm"
+                      >
+                        Unregister
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

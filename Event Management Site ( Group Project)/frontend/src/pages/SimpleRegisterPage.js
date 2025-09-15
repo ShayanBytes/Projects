@@ -9,14 +9,14 @@ const SimpleRegisterPage = () => {
     email: "",
     password: "",
     role: "attendee",
-    // Organizer fields
+    
     organizationName: "",
     contactInfo: {
       phone: "",
       website: "",
     },
     eventTypes: [],
-    // Attendee fields
+    
     interests: [],
     location: "",
   });
@@ -48,7 +48,7 @@ const SimpleRegisterPage = () => {
     setLoading(true);
 
     try {
-      // Prepare data based on role
+    
       const registrationData = {
         name: formData.name,
         email: formData.email,
@@ -59,7 +59,7 @@ const SimpleRegisterPage = () => {
       if (formData.role === "organizer") {
         registrationData.organizationName = formData.organizationName;
         registrationData.contactInfo = formData.contactInfo;
-        // Only include eventTypes if they have values
+     
         if (formData.eventTypes.length > 0) {
           registrationData.eventTypes = formData.eventTypes;
         }
@@ -67,7 +67,7 @@ const SimpleRegisterPage = () => {
         if (formData.location) {
           registrationData.location = formData.location;
         }
-        // Only include interests if they have values
+      
         if (formData.interests.length > 0) {
           registrationData.interests = formData.interests;
         }
@@ -91,15 +91,15 @@ const SimpleRegisterPage = () => {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">E</span>
-            </div>
+            <div className="w-10 h-10 flex items-center justify-center">
+            <img src="freepik__upload__67635.png" alt="" />
+          </div>
             <span className="text-xl font-semibold text-slate-900">
               EventHub
             </span>
           </div>
           <h1 className="heading-lg">Create Account</h1>
-          <p className="text-body mt-2">Join EventHub today</p>
+        
         </div>
 
         {error && <div className="status-error mb-6 text-center">{error}</div>}
@@ -158,7 +158,7 @@ const SimpleRegisterPage = () => {
               </select>
             </div>
 
-            {/* Organizer specific fields */}
+            {}
             {formData.role === "organizer" && (
               <>
                 <div className="form-group">
@@ -181,8 +181,17 @@ const SimpleRegisterPage = () => {
                     name="phone"
                     value={formData.contactInfo.phone}
                     onChange={handleChange}
+                    onInput={(e) => {
+                    
+                      e.target.value = e.target.value.replace(
+                        /[^0-9\s\-\(\)\+]/g,
+                        ""
+                      );
+                    }}
                     className="form-input"
                     placeholder="Enter your phone number"
+                    pattern="[0-9\s\-\(\)\+]*"
+                    title="Please enter only numbers and common phone number characters"
                   />
                 </div>
 
@@ -200,7 +209,7 @@ const SimpleRegisterPage = () => {
               </>
             )}
 
-            {/* Attendee specific fields */}
+            {}
             {formData.role === "attendee" && (
               <>
                 <div className="form-group">
@@ -220,7 +229,7 @@ const SimpleRegisterPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary"
+              className="w-full btn-primary rounded-md"
             >
               {loading ? (
                 <span className="flex items-center justify-center">

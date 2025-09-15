@@ -163,33 +163,35 @@ const EventDetailPage = () => {
                 </>
               )}
 
-              {isAttendee && !isOwner && (
+              {!isOwner && !isRegistered && (
                 <div>
-                  {isRegistered ? (
-                    <button
-                      onClick={handleUnregister}
-                      disabled={actionLoading}
-                      className="btn bg-red-600 text-white hover:bg-red-700"
-                    >
-                      {actionLoading ? "Unregistering..." : "Unregister"}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleRegister}
-                      disabled={actionLoading || isFull}
-                      className={`btn ${
-                        isFull
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : "btn-primary"
-                      }`}
-                    >
-                      {actionLoading
-                        ? "Registering..."
-                        : isFull
-                        ? "Event Full"
-                        : "Register"}
-                    </button>
-                  )}
+                  <button
+                    onClick={handleRegister}
+                    disabled={actionLoading || isFull}
+                    className={`btn ${
+                      isFull
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "btn-primary"
+                    }`}
+                  >
+                    {actionLoading
+                      ? "Registering..."
+                      : isFull
+                      ? "Event Full"
+                      : "Register"}
+                  </button>
+                </div>
+              )}
+
+              {!isOwner && isRegistered && (
+                <div>
+                  <button
+                    onClick={handleUnregister}
+                    disabled={actionLoading}
+                    className="btn bg-red-600 text-white hover:bg-red-700"
+                  >
+                    {actionLoading ? "Unregistering..." : "Unregister"}
+                  </button>
                 </div>
               )}
             </div>

@@ -59,8 +59,8 @@ router.put("/profile", auth, async (req, res) => {
   }
 });
 
-// Get user's registered events (attendee only)
-router.get("/registered-events", [auth, attendee], async (req, res) => {
+// Get user's registered events (all authenticated users)
+router.get("/registered-events", [auth], async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "registeredEvents",
