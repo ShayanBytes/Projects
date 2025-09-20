@@ -4,7 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 
 // Import routes
-const authRoutes =  require("./routes/auth");
+const authRoutes = require("./routes/auth");
 const eventRoutes = require("./routes/events");
 const userRoutes = require("./routes/users");
 

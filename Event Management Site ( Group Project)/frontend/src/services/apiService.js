@@ -51,13 +51,13 @@ export const eventService = {
     return response.data;
   },
 
-  // Register for event (attendee only)
+  // Register for event (authenticated users)
   registerForEvent: async (id) => {
     const response = await api.post(`/events/${id}/register`);
     return response.data;
   },
 
-  // Unregister from event (attendee only)
+  // Unregister from event (authenticated users)
   unregisterFromEvent: async (id) => {
     const response = await api.post(`/events/${id}/unregister`);
     return response.data;
@@ -89,9 +89,41 @@ export const userService = {
     return response.data;
   },
 
-  // Get registered events (attendee only)
+  // Get registered events (authenticated users)
   getRegisteredEvents: async () => {
     const response = await api.get("/users/registered-events");
+    return response.data;
+  },
+};
+
+export const historyService = {
+  // Get user's event history
+  getUserHistory: async (params = {}) => {
+    const response = await api.get("/users/history", { params });
+    return response.data;
+  },
+
+  // Get user's activity statistics
+  getUserStats: async () => {
+    const response = await api.get("/users/history/stats");
+    return response.data;
+  },
+
+  // Get user's activity from events endpoint (alternative)
+  getMyActivity: async (params = {}) => {
+    const response = await api.get("/events/history/my-activity", { params });
+    return response.data;
+  },
+
+  // Get my activity statistics from events endpoint
+  getMyStats: async () => {
+    const response = await api.get("/events/history/my-stats");
+    return response.data;
+  },
+
+  // Get event's registration history (organizer only)
+  getEventHistory: async (eventId, params = {}) => {
+    const response = await api.get(`/events/${eventId}/history`, { params });
     return response.data;
   },
 };

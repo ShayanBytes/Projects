@@ -77,7 +77,7 @@ const HomePage = () => {
             {/* Creator 3 */}
             <div className="text-center">
               <img
-                src="Sreejani.jpeg"
+                src="WhatsApp Image 2025-09-20 at 11.03.38.jpeg"
                 alt="Suranjana Giri"
                 className="w-24 h-24 rounded-full object-cover border-2 border-gray-300 shadow-md mx-auto mb-3"
               />

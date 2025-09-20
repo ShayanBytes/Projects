@@ -48,6 +48,10 @@ const Navbar = () => {
                 </Link>
               )}
 
+              <Link to="/history" className="nav-link">
+                History
+              </Link>
+
               <Link to="/profile" className="nav-link">
                 Profile
               </Link>

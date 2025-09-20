@@ -20,6 +20,7 @@ import ProfilePage from "./pages/ProfilePage";
 import EventsPage from "./pages/EventsPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import HistoryPage from "./pages/HistoryPage";
 
 // Organizer Pages
 import OrganizerEventsPage from "./pages/organizer/OrganizerEventsPage";
@@ -32,7 +33,7 @@ import AttendeeRegisteredEventsPage from "./pages/attendee/AttendeeRegisteredEve
 // Render Navbar on all routes except login/register
 const NavbarRenderer = () => {
   const location = useLocation();
-  const hideOn = ["/login", "/register", "/"]; 
+  const hideOn = ["/login", "/register", "/"];
   if (hideOn.includes(location.pathname)) return null;
   return <Navbar />;
 };
@@ -48,7 +49,7 @@ function App() {
             <Route path="/" element={<WorkingLoginPage />} />
             <Route path="/login" element={<WorkingLoginPage />} />
             <Route path="/register" element={<SimpleRegisterPage />} />
-            
+
             {/* Protected Routes - After Authentication */}
             <Route
               path="/home"
@@ -89,6 +90,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <HistoryPage />
                 </ProtectedRoute>
               }
             />

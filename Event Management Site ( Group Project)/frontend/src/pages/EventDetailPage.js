@@ -7,7 +7,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 const EventDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAttendee, isOrganizer, user } = useAuth();
+  const { isAttendee, isOrganizer, isAuthenticated, user } = useAuth();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,6 +43,14 @@ const EventDetailPage = () => {
   };
 
   const handleUnregister = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to unregister from this event? You may lose your spot."
+      )
+    ) {
+      return;
+    }
+
     setActionLoading(true);
     try {
       await eventService.unregisterFromEvent(id);
@@ -163,35 +171,33 @@ const EventDetailPage = () => {
                 </>
               )}
 
-              {!isOwner && !isRegistered && (
+              {isAuthenticated && !isOwner && (
                 <div>
-                  <button
-                    onClick={handleRegister}
-                    disabled={actionLoading || isFull}
-                    className={`btn ${
-                      isFull
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "btn-primary"
-                    }`}
-                  >
-                    {actionLoading
-                      ? "Registering..."
-                      : isFull
-                      ? "Event Full"
-                      : "Register"}
-                  </button>
-                </div>
-              )}
-
-              {!isOwner && isRegistered && (
-                <div>
-                  <button
-                    onClick={handleUnregister}
-                    disabled={actionLoading}
-                    className="btn bg-red-600 text-white hover:bg-red-700"
-                  >
-                    {actionLoading ? "Unregistering..." : "Unregister"}
-                  </button>
+                  {isRegistered ? (
+                    <button
+                      onClick={handleUnregister}
+                      disabled={actionLoading}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                    >
+                      {actionLoading ? "Processing..." : "Unregister"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleRegister}
+                      disabled={actionLoading || isFull}
+                      className={`btn ${
+                        isFull
+                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          : "btn-primary"
+                      }`}
+                    >
+                      {actionLoading
+                        ? "Registering..."
+                        : isFull
+                        ? "Event Full"
+                        : "Register"}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -266,24 +272,41 @@ const EventDetailPage = () => {
               </div>
 
               {/* Registration Status */}
-              {isAttendee && (
+              {isAuthenticated && (
                 <div
                   className={`p-4 rounded-lg ${
                     isRegistered
                       ? "bg-green-50 border border-green-200"
-                      : "bg-gray-50"
+                      : "bg-gray-50 border border-gray-200"
                   }`}
                 >
                   <h3 className="font-semibold mb-2">Registration Status</h3>
-                  <p
-                    className={`text-sm ${
-                      isRegistered ? "text-green-700" : "text-gray-600"
-                    }`}
-                  >
-                    {isRegistered
-                      ? "✅ You are registered for this event"
-                      : "Not registered"}
-                  </p>
+                  {isRegistered ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <svg
+                          className="w-5 h-5 text-green-600 mr-2"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="text-sm font-medium text-green-700">
+                          You are registered for this event
+                        </span>
+                      </div>
+                      <p className="text-xs text-green-600">
+                        You'll receive updates about this event. Use the
+                        unregister button above if you can't attend.
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-600">Not registered</p>
+                  )}
                 </div>
               )}
             </div>

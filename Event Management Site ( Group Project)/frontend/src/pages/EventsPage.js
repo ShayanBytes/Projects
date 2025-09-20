@@ -5,7 +5,7 @@ import EventCard from "../components/EventCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const EventsPage = () => {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -48,15 +48,6 @@ const EventsPage = () => {
       fetchEvents(pagination.currentPage); // Refresh events
     } catch (err) {
       alert(err.response?.data?.message || "Failed to register for event");
-    }
-  };
-
-  const handleUnregister = async (eventId) => {
-    try {
-      await eventService.unregisterFromEvent(eventId);
-      fetchEvents(pagination.currentPage); // Refresh events
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to unregister from event");
     }
   };
 
@@ -110,9 +101,8 @@ const EventsPage = () => {
                 <EventCard
                   key={event._id}
                   event={event}
-                  showRegistrationButton={true}
+                  showRegistrationButton={isAuthenticated}
                   onRegister={handleRegister}
-                  onUnregister={handleUnregister}
                 />
               ))}
             </div>

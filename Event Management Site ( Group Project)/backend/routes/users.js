@@ -1,7 +1,8 @@
 const express = require("express");
 const User = require("../models/User");
 const Event = require("../models/Event");
-const { auth, attendee } = require("../middleware/auth");
+const { auth } = require("../middleware/auth");
+const EventHistoryService = require("../services/EventHistoryService");
 
 const router = express.Router();
 
@@ -59,7 +60,7 @@ router.put("/profile", auth, async (req, res) => {
   }
 });
 
-// Get user's registered events (all authenticated users)
+// Get user's registered events (any authenticated user)
 router.get("/registered-events", [auth], async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
@@ -73,6 +74,39 @@ router.get("/registered-events", [auth], async (req, res) => {
     res.json({
       registeredEvents: user.registeredEvents,
     });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// Get user's complete event history
+router.get("/history", [auth], async (req, res) => {
+  try {
+    const { page, limit, action, startDate, endDate } = req.query;
+
+    const options = {
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 20,
+      action,
+      startDate,
+      endDate,
+    };
+
+    const result = await EventHistoryService.getUserHistory(
+      req.user._id,
+      options
+    );
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// Get user's activity statistics
+router.get("/history/stats", [auth], async (req, res) => {
+  try {
+    const stats = await EventHistoryService.getUserStats(req.user._id);
+    res.json(stats);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

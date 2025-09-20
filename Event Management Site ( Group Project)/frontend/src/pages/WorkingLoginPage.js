@@ -17,7 +17,7 @@ const WorkingLoginPage = () => {
 
   const from = location.state?.from?.pathname;
 
-  
+  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       navigate(from || "/home", { replace: true });
@@ -50,12 +50,12 @@ const WorkingLoginPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        {}
+        {/* Clean Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 mb-4">
-            <div className="w-10 h-10 flex items-center justify-center">
-            <img src="freepik__upload__67635.png" alt="" />
-          </div>
+            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">E</span>
+            </div>
             <span className="text-xl font-semibold text-slate-900">
               EventHub
             </span>
@@ -64,7 +64,7 @@ const WorkingLoginPage = () => {
           <p className="text-body mt-2">Sign in to your account</p>
         </div>
 
-        {}
+        {/* Clean Messages */}
         {location.state?.justRegistered && (
           <div className="status-success mb-6 text-center">
             Registration successful! Please sign in to continue.
@@ -73,7 +73,7 @@ const WorkingLoginPage = () => {
 
         {error && <div className="status-error mb-6 text-center">{error}</div>}
 
-        {}
+        {/* Clean Form */}
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-6">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="form-group">
@@ -105,7 +105,7 @@ const WorkingLoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary rounded-md"
+              className="w-full btn-primary"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -119,7 +119,7 @@ const WorkingLoginPage = () => {
           </form>
         </div>
 
-        {}
+        {/* Clean Sign Up Link */}
         <div className="text-center">
           <span className="text-small text-slate-500">
             Don't have an account?
