@@ -172,7 +172,7 @@ const HomePage = () => {
           {/* For Attendees */}
           <div>
             <h3 className="text-2xl font-semibold text-slate-900 mb-6">
-              For Event Attendees
+              For the attendess kj
             </h3>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
@@ -187,7 +187,7 @@ const HomePage = () => {
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2.5 flex-shrink-0"></div>
+                <div  className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2.5 flex-shrink-0"></div>
                 <div>
                   <div className="font-medium text-slate-900 mb-1">
                     Simple Registration Process
